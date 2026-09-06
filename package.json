@@ -1,0 +1,26 @@
+{
+  "name": "recipe-world-app",
+  "version": "1.0.0",
+  "description": "Web Aplikasi Resep Masakan Dunia berbasis AI (Vanilla JS + Vite + Google Gemini)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "recipe",
+    "gemini",
+    "ai",
+    "vanilla-js",
+    "vite"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="World Recipe — jelajahi resep masakan dari seluruh dunia dan generasikan resep kustom dengan bantuan AI."
+    />
+    <title>World Recipe — Resep Masakan Dunia + AI</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a href="#" class="brand" id="brand-link">
+          <span class="brand-icon">🍳</span>
+          <span class="brand-name">World&nbsp;Recipe</span>
+        </a>
+        <nav class="main-nav" aria-label="Navigasi utama">
+          <button class="nav-link active" id="nav-home" data-view="home">Beranda</button>
+          <button class="nav-link" id="nav-fav" data-view="favorites">Favorit</button>
+          <button class="btn btn-ai-nav" id="open-ai-btn">
+            <span aria-hidden="true">✨</span> Asisten AI
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1 class="hero-title">Resep Masakan Dunia,<br />di Ujung Jari Anda</h1>
+          <p class="hero-subtitle">
+            Jelajahi ratusan resep dari seluruh dunia, atau biarkan AI meracik resep
+            kustom dari bahan-bahan yang ada di dapur Anda.
+          </p>
+          <div class="hero-search">
+            <svg
+              class="search-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="search"
+              id="search-input"
+              class="search-input"
+              placeholder="Cari resep (mis. ramen, ayam, italia)..."
+              autocomplete="off"
+            />
+            <button class="btn btn-search-ai" id="search-ai-btn">
+              ✨ Tanya AI
+            </button>
+          </div>
+          <div class="hero-chips" id="ai-quick-chips">
+            <span class="chip-label">Coba:</span>
+            <button class="chip" data-prompt="Buatkan resep masakan khas Italia dengan bahan utama ayam dan jamur">
+              🇮🇹 Italia, ayam &amp; jamur
+            </button>
+            <button class="chip" data-prompt="Saya punya telur, bawang putih, dan kecap. Apa yang bisa saya masak?">
+              🥚 Telur, bawang putih, kecap
+            </button>
+            <button class="chip" data-prompt="Buatkan menu dessert yang mudah tanpa oven">
+              🍮 Dessert tanpa oven
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="container">
+        <div class="filter-bar" id="filter-bar">
+          <div class="filter-group">
+            <label for="filter-origin">Kawasan / Negara</label>
+            <select id="filter-origin" class="select">
+              <option value="">Semua</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-category">Kategori</label>
+            <select id="filter-category" class="select">
+              <option value="">Semua</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-time">Waktu Masak Maks.</label>
+            <select id="filter-time" class="select">
+              <option value="0">Semua</option>
+              <option value="30">≤ 30 menit</option>
+              <option value="60">≤ 60 menit</option>
+              <option value="120">≤ 120 menit</option>
+            </select>
+          </div>
+          <label class="checkbox-group">
+            <input type="checkbox" id="filter-fav" />
+            <span>❤️ Hanya favorit</span>
+          </label>
+          <button class="btn btn-ghost" id="reset-filter-btn">Reset</button>
+          <span class="result-count" id="result-count"></span>
+        </div>
+
+        <div class="recipe-grid" id="recipe-grid" aria-live="polite"></div>
+
+        <div class="empty-state" id="empty-state" hidden>
+          <div class="empty-icon">🍽️</div>
+          <h3>Belum ada resep ditemukan</h3>
+          <p>Coba ubah kata kunci pencarian atau filter yang sedang aktif.</p>
+          <button class="btn btn-ghost" id="empty-reset-btn">Tampilkan semua resep</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>🍳 <strong>World Recipe</strong> — Kompilasi resep dunia &amp; generator resep AI.</p>
+        <p class="footer-note">
+          Resep asli disimpan dalam <code>data/recipes.json</code> · Resep favorit disimpan
+          di <code>localStorage</code> browser Anda.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Modal Detail Resep -->
+    <div class="modal-backdrop" id="detail-modal" hidden>
+      <div class="modal modal-detail" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+        <button class="modal-close" data-close="detail-modal" aria-label="Tutup">✕</button>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+
+    <!-- Modal Asisten AI -->
+    <div class="modal-backdrop" id="ai-modal" hidden>
+      <div class="modal modal-ai" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+        <div class="ai-header">
+          <div class="ai-header-info">
+            <span class="ai-orb" aria-hidden="true">✨</span>
+            <div>
+              <h2 id="ai-modal-title">Asisten AI Resep</h2>
+              <p class="ai-status" id="ai-status">Memeriksa konfigurasi API…</p>
+            </div>
+          </div>
+          <button class="modal-close" data-close="ai-modal" aria-label="Tutup">✕</button>
+        </div>
+
+        <div class="ai-conversation" id="ai-conversation" aria-live="polite">
+          <div class="ai-msg ai-msg-bot">
+            Halo! Saya chef AI Anda 👨‍🍳<br />Tanya apa saja, misalnya:
+            <ul class="ai-suggestions">
+              <li>"Resep khas Thailand yang pedas"</li>
+              <li>"Apa yang bisa kumasak dari tahu &amp; brokoli?"</li>
+              <li>"Ubah resep ramen jadi versi vegetarian"</li>
+            </ul>
+          </div>
+        </div>
+
+        <form class="ai-input-row" id="ai-form">
+          <textarea
+            id="ai-input"
+            rows="1"
+            placeholder="Tulis permintaan resep Anda di sini…"
+            maxlength="2000"
+          ></textarea>
+          <button type="submit" class="btn btn-ai-send" id="ai-send-btn">Kirim</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" hidden></div>
+
+    <script type="module" src="/assets/js/app.js"></script>
+
+<script>
+  const workerURL = '/api/ai'; 
+
+  
+  document.getElementById('btn-ai').onclick = () => {
+    document.getElementById('ai-popup').style.display = 'block';
+  }
+
+  
+  document.getElementById('ai-kirim').onclick = async () => {
+    const pertanyaan = document.getElementById('ai-input').value;
+    document.getElementById('ai-jawaban').innerText = 'Chef lagi mikir...';
+
+    const res = await fetch(workerURL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt: pertanyaan})
+    });
+    const data = await res.json();
+    document.getElementById('ai-jawaban').innerText = data.text;
+  }
+</script>
+
+<button id="btn-ai">Tanya Chef AI 🤖</button>
+
+<div id="ai-popup" style="display:none; position:fixed; bottom:20px; right:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px #000">
+  <input id="ai-input" placeholder="Contoh: resep nasi goreng" style="width:250px">
+  <button id="ai-kirim">Kirim</button>
+  <div id="ai-jawaban" style="margin-top:10px"></div>
+</div>
+
+  </body>
+</html>
